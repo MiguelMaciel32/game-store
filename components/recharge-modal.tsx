@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Plus, Minus, Copy, QrCode, Clock, CheckCircle, AlertCircle, ArrowLeft } from "lucide-react"
+import { Plus, Minus, Copy, QrCode, Clock, CheckCircle, AlertCircle, ArrowLeft, Sparkles, Zap } from "lucide-react"
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/use-auth"
 import { supabase } from "@/lib/supabase"
@@ -18,7 +18,7 @@ interface RechargeModalProps {
 
 export default function RechargeModal({ isOpen, onClose, onRechargeSuccess }: RechargeModalProps) {
   const { user, updateBalance } = useAuth()
-  const [amount, setAmount] = useState(30)
+  const [amount, setAmount] = useState(50)
   const [noBonus, setNoBonus] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [pixData, setPixData] = useState<any>(null)
@@ -29,12 +29,12 @@ export default function RechargeModal({ isOpen, onClose, onRechargeSuccess }: Re
   const checkIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const predefinedAmounts = [
-    { value: 30, label: "R$ 30" },
-    { value: 50, label: "R$ 50", popular: true },
-    { value: 100, label: "R$ 100" },
-    { value: 250, label: "R$ 250", hot: true },
-    { value: 500, label: "R$ 500" },
-    { value: 1000, label: "R$ 1.000", hot: true },
+    { value: 30, label: "R$ 30", bonus: 0 },
+    { value: 50, label: "R$ 50", bonus: 5, popular: true },
+    { value: 100, label: "R$ 100", bonus: 15 },
+    { value: 250, label: "R$ 250", bonus: 50, hot: true },
+    { value: 500, label: "R$ 500", bonus: 125 },
+    { value: 1000, label: "R$ 1.000", bonus: 300, hot: true },
   ]
 
   const handleAmountChange = (value: string) => {
@@ -86,8 +86,6 @@ export default function RechargeModal({ isOpen, onClose, onRechargeSuccess }: Re
         updated_at: new Date().toISOString(),
       }
 
-      console.log("💾 Salvando PIX no banco:", pixPaymentData)
-
       const { data, error } = await supabase.from("pix_payments").insert([pixPaymentData]).select().single()
 
       if (error) {
@@ -95,7 +93,6 @@ export default function RechargeModal({ isOpen, onClose, onRechargeSuccess }: Re
         return null
       }
 
-      console.log("✅ PIX salvo no banco com sucesso:", data.id)
       return data
     } catch (error) {
       console.error("💥 Erro ao salvar PIX no banco:", error)
@@ -119,7 +116,6 @@ export default function RechargeModal({ isOpen, onClose, onRechargeSuccess }: Re
         return false
       }
 
-      console.log(`✅ Status do PIX atualizado para: ${status}`)
       return true
     } catch (error) {
       console.error("💥 Erro ao atualizar status do PIX:", error)
@@ -207,7 +203,6 @@ export default function RechargeModal({ isOpen, onClose, onRechargeSuccess }: Re
       }
 
       updateBalance(newBalance)
-      console.log(`Saldo atualizado: R$ ${user.balance} + R$ ${newAmount} = R$ ${newBalance}`)
       return true
     } catch (error) {
       console.error("Erro ao atualizar saldo:", error)
@@ -321,60 +316,64 @@ export default function RechargeModal({ isOpen, onClose, onRechargeSuccess }: Re
     onClose()
   }
 
+  const getBonus = (value: number) => {
+    const preset = predefinedAmounts.find((p) => p.value === value)
+    return preset?.bonus || 0
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogOverlay className="bg-black/60 backdrop-blur-sm" />
-      <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[95vw] max-w-[420px] sm:w-[90vw] md:max-w-md p-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-slate-700/50 shadow-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-xl sm:rounded-2xl">
+      <DialogOverlay className="bg-black/80 backdrop-blur-md" />
+      <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[95vw] max-w-[440px] p-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 shadow-2xl max-h-[95vh] overflow-y-auto rounded-3xl">
+        {/* Success State */}
         {paymentStatus === "APPROVED" && (
-          <div className="p-4 sm:p-6 md:p-8 text-center">
-            <div className="relative mb-4 sm:mb-6">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-emerald-500/20 rounded-full blur-xl"></div>
-              <CheckCircle className="relative h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 text-emerald-400 mx-auto animate-bounce" />
+          <div className="p-8 text-center">
+            <div className="relative mb-8">
+              <div className="absolute inset-0 bg-green-500/20 rounded-full blur-3xl animate-pulse"></div>
+              <div className="relative bg-gradient-to-br from-green-400 to-emerald-500 rounded-full p-6 mx-auto w-24 h-24 flex items-center justify-center">
+                <CheckCircle className="h-12 w-12 text-white" />
+              </div>
             </div>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-emerald-400 to-emerald-500 bg-clip-text text-transparent mb-2 sm:mb-3">
-              Pagamento Aprovado!
-            </h2>
-            <p className="text-slate-300 mb-2 sm:mb-3 text-xs sm:text-sm md:text-base">
-              Seu saldo foi adicionado com sucesso.
-            </p>
-            <p className="text-emerald-400 text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 drop-shadow-lg">
-              + R$ {amount.toFixed(2)}
-            </p>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg sm:rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 backdrop-blur-sm">
-              <div className="flex justify-between items-center">
-                <span className="text-slate-300 text-xs sm:text-sm">Novo saldo:</span>
-                <span className="text-emerald-400 font-bold text-base sm:text-lg">
-                  R$ {user?.balance?.toFixed(2) || "0.00"}
-                </span>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">Pagamento Aprovado!</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">Seu saldo foi adicionado com sucesso</p>
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 mb-8">
+              <div className="text-center">
+                <p className="text-green-600 dark:text-green-400 text-4xl font-bold mb-2">+ R$ {amount.toFixed(2)}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                  Novo saldo: R$ {user?.balance?.toFixed(2) || "0.00"}
+                </p>
               </div>
             </div>
             <Button
               onClick={handleClose}
-              className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold h-10 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg rounded-lg sm:rounded-xl shadow-lg"
+              className="w-full h-14 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold text-lg rounded-2xl shadow-lg"
             >
               Continuar
             </Button>
           </div>
         )}
 
+        {/* Expired State */}
         {paymentStatus === "expired" && (
-          <div className="p-4 sm:p-6 md:p-8 text-center">
-            <AlertCircle className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 text-red-400 mx-auto mb-3 sm:mb-4" />
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2">PIX Expirado</h2>
-            <p className="text-slate-300 mb-4 sm:mb-6 text-xs sm:text-sm md:text-base">
-              O tempo para pagamento expirou.
+          <div className="p-8 text-center">
+            <div className="bg-gradient-to-br from-red-400 to-red-500 rounded-full p-6 mx-auto w-24 h-24 flex items-center justify-center mb-8">
+              <AlertCircle className="h-12 w-12 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">PIX Expirado</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-8">
+              O tempo para pagamento expirou. Gere um novo PIX para continuar.
             </p>
-            <div className="space-y-2 sm:space-y-3">
+            <div className="space-y-3">
               <Button
                 onClick={resetModal}
-                className="w-full bg-slate-700 hover:bg-slate-600 border border-slate-600 text-white h-9 sm:h-10 md:h-12 rounded-lg sm:rounded-xl text-sm sm:text-base"
+                className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-2xl"
               >
                 Gerar Novo PIX
               </Button>
               <Button
                 onClick={handleClose}
                 variant="outline"
-                className="w-full border-slate-600 text-slate-300 hover:bg-slate-800 h-9 sm:h-10 md:h-12 bg-transparent rounded-lg sm:rounded-xl text-sm sm:text-base"
+                className="w-full h-12 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-2xl bg-transparent"
               >
                 Fechar
               </Button>
@@ -382,94 +381,94 @@ export default function RechargeModal({ isOpen, onClose, onRechargeSuccess }: Re
           </div>
         )}
 
+        {/* Pending Payment State */}
         {paymentStatus === "pending" && pixData && (
           <>
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 border-b border-slate-600/50 p-3 sm:p-4 rounded-t-xl sm:rounded-t-2xl">
-              <div className="flex items-center justify-between mb-2 sm:mb-3">
+            {/* Header with Timer */}
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-t-3xl text-white">
+              <div className="flex items-center justify-between mb-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={resetModal}
-                  className="text-slate-300 hover:bg-slate-700 hover:text-white rounded-md sm:rounded-lg text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3"
+                  className="text-white/80 hover:text-white hover:bg-white/10 rounded-xl"
                 >
-                  <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                  <ArrowLeft className="h-4 w-4 mr-2" />
                   Voltar
                 </Button>
-                <div className="flex items-center space-x-1 sm:space-x-2">
-                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] sm:text-xs text-blue-400 font-medium">Verificando... #{checkCount}</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium">Verificando... #{checkCount}</span>
                 </div>
               </div>
-              <div className="flex items-center justify-between mb-1 sm:mb-2">
-                <div className="flex items-center space-x-1 sm:space-x-2">
-                  <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400" />
-                  <span className="text-slate-300 text-xs sm:text-sm">Tempo restante:</span>
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-2">{formatTime(timeLeft)}</div>
+                <p className="text-white/80 text-sm mb-4">Tempo restante para pagamento</p>
+                <div className="bg-white/20 rounded-full h-2">
+                  <div
+                    className="bg-white h-2 rounded-full transition-all duration-1000"
+                    style={{ width: `${(timeLeft / (15 * 60)) * 100}%` }}
+                  />
                 </div>
-                <div className="text-sm sm:text-base md:text-lg font-bold text-blue-400">{formatTime(timeLeft)}</div>
-              </div>
-              <div className="bg-slate-700/50 rounded-full h-1.5 sm:h-2">
-                <div
-                  className="bg-gradient-to-r from-blue-400 to-blue-500 h-1.5 sm:h-2 rounded-full transition-all duration-1000"
-                  style={{ width: `${(timeLeft / (15 * 60)) * 100}%` }}
-                />
               </div>
             </div>
 
-            <div className="p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4">
+            <div className="p-6 space-y-6">
+              {/* QR Code Section */}
               <div className="text-center">
-                <div className="bg-gradient-to-r from-green-400/20 to-green-500/20 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                  <QrCode className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
-                </div>
-                <h3 className="text-sm sm:text-base font-bold text-white mb-2 sm:mb-3">Escaneie o QR Code</h3>
-                <div className="bg-white p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl mb-3 sm:mb-4 shadow-lg">
-                  {pixData.pixQrCode ? (
-                    <img
-                      src={pixData.pixQrCode || "/placeholder.svg"}
-                      alt="QR Code PIX"
-                      className="w-full h-24 xs:h-28 sm:h-32 md:h-40 object-contain"
-                    />
-                  ) : (
-                    <div className="h-24 xs:h-28 sm:h-32 md:h-40 bg-slate-200 rounded flex items-center justify-center">
-                      <span className="text-slate-500 text-xs sm:text-sm">QR Code indisponível</span>
-                    </div>
-                  )}
+                <div className="bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 mb-6">
+                  <div className="bg-green-500 rounded-full p-3 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <QrCode className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Escaneie o QR Code</h3>
+                  <div className="bg-white rounded-2xl p-4 shadow-inner">
+                    {pixData.pixQrCode ? (
+                      <img
+                        src={pixData.pixQrCode || "/placeholder.svg"}
+                        alt="QR Code PIX"
+                        className="w-full h-48 object-contain"
+                      />
+                    ) : (
+                      <div className="h-48 bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center">
+                        <span className="text-gray-500 text-sm">QR Code indisponível</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
+              {/* PIX Code Section */}
               {pixData.pixCode && (
-                <div>
-                  <h4 className="text-white font-semibold mb-2 text-xs sm:text-sm">Ou copie o código PIX:</h4>
-                  <div className="bg-slate-800/50 border border-slate-700/50 p-2 sm:p-3 rounded-lg mb-2 sm:mb-3 backdrop-blur-sm">
-                    <code className="text-[10px] sm:text-xs text-slate-300 break-all font-mono leading-relaxed">
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Ou copie o código PIX:</h4>
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4">
+                    <code className="text-sm text-gray-700 dark:text-gray-300 break-all font-mono leading-relaxed">
                       {pixData.pixCode}
                     </code>
                   </div>
                   <Button
                     onClick={copyPixCode}
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 h-9 sm:h-10 md:h-12 rounded-lg sm:rounded-xl shadow-lg text-xs sm:text-sm md:text-base"
+                    className="w-full h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-2xl shadow-lg"
                   >
-                    <Copy className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <Copy className="h-4 w-4 mr-2" />
                     Copiar Código PIX
                   </Button>
                 </div>
               )}
 
-              <div className="bg-slate-800/50 border border-slate-700/50 p-3 sm:p-4 rounded-lg sm:rounded-xl backdrop-blur-sm">
-                <div className="space-y-1.5 sm:space-y-2">
+              {/* Payment Info */}
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6">
+                <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-300 text-xs sm:text-sm">Valor:</span>
-                    <span className="text-white font-semibold text-sm sm:text-base">R$ {amount.toFixed(2)}</span>
+                    <span className="text-gray-600 dark:text-gray-300">Valor:</span>
+                    <span className="text-xl font-bold text-gray-900 dark:text-white">R$ {amount.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-300 text-xs sm:text-sm">Status:</span>
-                    <span className="text-blue-400 text-xs sm:text-sm flex items-center">
-                      <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
-                      Aguardando pagamento...
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-300 text-xs sm:text-sm">ID:</span>
-                    <span className="text-slate-400 text-[10px] sm:text-xs font-mono">{pixData.id?.slice(-8)}</span>
+                    <span className="text-gray-600 dark:text-gray-300">Status:</span>
+                    <div className="flex items-center text-blue-500">
+                      <Clock className="h-4 w-4 mr-1" />
+                      <span className="text-sm font-medium">Aguardando pagamento</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -477,114 +476,142 @@ export default function RechargeModal({ isOpen, onClose, onRechargeSuccess }: Re
           </>
         )}
 
+        {/* Initial State */}
         {paymentStatus === "idle" && (
           <>
-            <div className="relative w-full h-24 sm:h-32 md:h-40 overflow-hidden rounded-t-xl sm:rounded-t-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800"></div>
+            {/* Header - Espaço para imagem personalizada 440x200px */}
+            <div className="relative overflow-hidden rounded-t-3xl h-[200px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-700"></div>
               <div className="absolute inset-0 bg-black/20"></div>
               <div className="relative h-full flex items-center justify-center text-center">
                 <div>
-                  <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">💰</div>
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-white">Adicionar Saldo</h2>
-                  <p className="text-blue-100 text-xs sm:text-sm">Recarregue sua conta</p>
+                  <div className="bg-white/20 rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center backdrop-blur-sm">
+                    <Sparkles className="h-10 w-10 text-white" />
+                  </div>
+                  <h1 className="text-2xl font-bold mb-2 text-white">Adicionar Saldo</h1>
+                  <p className="text-white/80">Recarregue sua conta de forma rápida e segura</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6">
-              <div>
-                <h2 className="text-lg sm:text-xl font-bold text-white mb-1">Depositar</h2>
-                <p className="text-xs sm:text-sm text-slate-300">Adicione saldo à sua conta</p>
-              </div>
-
-              <div>
-                <label className="text-xs sm:text-sm text-slate-300 mb-1.5 sm:mb-2 block">
-                  Valor a ser depositado:
-                </label>
-                <div className="flex items-center bg-slate-800/50 border border-slate-700/50 rounded-lg sm:rounded-xl backdrop-blur-sm">
-                  <span className="px-2 sm:px-3 text-slate-300 text-sm sm:text-base">R$</span>
-                  <Input
-                    type="number"
-                    value={amount}
-                    onChange={(e) => handleAmountChange(e.target.value)}
-                    className="flex-1 bg-transparent border-0 text-white text-base sm:text-lg font-semibold focus:ring-0 focus:outline-none h-10 sm:h-12"
-                    min="30"
-                    max="10000"
-                  />
-                  <div className="flex">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 sm:h-8 sm:w-8 text-slate-300 hover:text-white hover:bg-slate-700"
-                      onClick={decrementAmount}
-                    >
-                      <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 sm:h-8 sm:w-8 text-slate-300 hover:text-white hover:bg-slate-700"
-                      onClick={incrementAmount}
-                    >
-                      <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
-                    </Button>
+            <div className="p-6 space-y-6">
+              {/* Amount Input */}
+              <div className="space-y-4">
+                <label className="text-lg font-semibold text-gray-900 dark:text-white block">Valor do depósito</label>
+                <div className="relative">
+                  <div className="flex items-center bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-gray-100 dark:border-gray-700 focus-within:border-blue-500 transition-colors">
+                    <span className="px-4 text-gray-600 dark:text-gray-300 font-semibold">R$</span>
+                    <Input
+                      type="number"
+                      value={amount}
+                      onChange={(e) => handleAmountChange(e.target.value)}
+                      className="flex-1 bg-transparent border-0 text-2xl font-bold text-gray-900 dark:text-white focus:ring-0 focus:outline-none h-16"
+                      min="30"
+                      max="10000"
+                      placeholder="0,00"
+                    />
+                    <div className="flex p-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-10 w-10 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl"
+                        onClick={decrementAmount}
+                      >
+                        <Minus className="h-5 w-5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-10 w-10 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl"
+                        onClick={incrementAmount}
+                      >
+                        <Plus className="h-5 w-5" />
+                      </Button>
+                    </div>
                   </div>
+                  {getBonus(amount) > 0 && (
+                    <div className="absolute -top-2 right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                      +R$ {getBonus(amount)} bônus
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2">
-                {predefinedAmounts.map((preset) => (
-                  <Button
-                    key={preset.value}
-                    variant={amount === preset.value ? "default" : "outline"}
-                    className={`relative h-8 sm:h-10 md:h-12 text-xs sm:text-sm md:text-base rounded-lg sm:rounded-xl transition-all ${
-                      amount === preset.value
-                        ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-blue-500 shadow-lg"
-                        : "bg-slate-800/50 hover:bg-slate-700 text-slate-300 border-slate-700/50 backdrop-blur-sm"
-                    }`}
-                    onClick={() => setAmount(preset.value)}
-                  >
-                    {preset.label}
-                    {preset.popular && (
-                      <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[8px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded-full font-bold shadow-lg border border-orange-400">
-                        HOT
-                      </span>
-                    )}
-                    {preset.hot && (
-                      <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-[8px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded-full font-bold shadow-lg border border-green-400">
-                        HOT
-                      </span>
-                    )}
-                  </Button>
-                ))}
+              {/* Predefined Amounts */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Valores populares</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {predefinedAmounts.map((preset) => (
+                    <Button
+                      key={preset.value}
+                      variant={amount === preset.value ? "default" : "outline"}
+                      className={`relative h-16 rounded-2xl transition-all duration-200 ${
+                        amount === preset.value
+                          ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-lg scale-105"
+                          : "bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setAmount(preset.value)}
+                    >
+                      <div className="text-center">
+                        <div className="font-bold text-lg">{preset.label}</div>
+                        {preset.bonus > 0 && <div className="text-xs opacity-80">+R$ {preset.bonus} bônus</div>}
+                      </div>
+                      {preset.popular && (
+                        <div className="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg flex items-center">
+                          <Zap className="h-3 w-3 mr-1" />
+                          POPULAR
+                        </div>
+                      )}
+                      {preset.hot && (
+                        <div className="absolute -top-2 -right-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg flex items-center">
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          MELHOR
+                        </div>
+                      )}
+                    </Button>
+                  ))}
+                </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="no-bonus"
-                  checked={noBonus}
-                  onCheckedChange={(checked) => setNoBonus(!!checked)}
-                  className="border-slate-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 h-4 w-4 sm:h-5 sm:w-5"
-                />
-                <label htmlFor="no-bonus" className="text-xs sm:text-sm text-slate-300 cursor-pointer">
-                  Não quero receber nenhum bônus
-                </label>
+              {/* Bonus Option */}
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-2xl p-4">
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="no-bonus"
+                    checked={noBonus}
+                    onCheckedChange={(checked) => setNoBonus(!!checked)}
+                    className="border-2 border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500 h-5 w-5"
+                  />
+                  <label htmlFor="no-bonus" className="text-gray-700 dark:text-gray-300 cursor-pointer flex-1">
+                    Não quero receber bônus (processamento mais rápido)
+                  </label>
+                </div>
               </div>
 
+              {/* Generate PIX Button */}
               <Button
                 onClick={generatePix}
                 disabled={isLoading || amount < 30}
-                className="w-full h-9 sm:h-10 md:h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold text-sm sm:text-base md:text-lg rounded-lg sm:rounded-xl disabled:opacity-50 shadow-lg transition-all"
+                className="w-full h-16 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold text-lg rounded-2xl disabled:opacity-50 shadow-lg transition-all duration-200 hover:scale-105"
               >
                 {isLoading ? (
                   <div className="flex items-center">
-                    <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-1.5 sm:mr-2"></div>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
                     Gerando PIX...
                   </div>
                 ) : (
-                  "Gerar PIX"
+                  <div className="flex items-center">
+                    <QrCode className="h-5 w-5 mr-3" />
+                    Gerar PIX - R$ {amount.toFixed(2)}
+                  </div>
                 )}
               </Button>
+
+              {/* Security Info */}
+              <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                <p>🔒 Pagamento 100% seguro via PIX</p>
+                <p>⚡ Processamento instantâneo</p>
+              </div>
             </div>
           </>
         )}

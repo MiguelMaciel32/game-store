@@ -30,6 +30,7 @@ import { toast } from "sonner"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import WishlistButton from "./wishlist-button"
 import { useAuth } from "@/hooks/use-auth"
+import { supabase } from "@/lib/supabase"
 
 interface GameAccount {
   item_id: number
@@ -117,7 +118,7 @@ interface ProductDetailContentProps {
 }
 
 export default function ProductDetailContent({ productId }: ProductDetailContentProps) {
-  const { user } = useAuth()
+  const { user, updateBalance } = useAuth()
   const [account, setAccount] = useState<GameAccount | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -172,6 +173,32 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
       const data = response.data
 
       if (data && data.status === "ok") {
+        // ✅ DESCONTAR O SALDO DO USUÁRIO
+        const newBalance = user.balance - priceInReais
+
+        // Atualizar no banco de dados
+        const { error } = await supabase.from("users").update({ balance: newBalance }).eq("id", user.id)
+
+        if (error) {
+          console.error("Erro ao atualizar saldo:", error)
+          toast.error("Compra realizada, mas erro ao atualizar saldo. Contate o suporte.")
+        } else {
+          // Atualizar o contexto do usuário
+          updateBalance(newBalance)
+
+          // Registrar a transação
+          await supabase.from("transactions").insert({
+            user_id: user.id,
+            type: "PURCHASE",
+            amount: -priceInReais,
+            description: `Compra: ${account.title}`,
+            reference_id: productId,
+            balance_before: user.balance,
+            balance_after: newBalance,
+            created_at: new Date().toISOString(),
+          })
+        }
+
         setLoginData(data.item)
         setShowLoadingDialog(false)
         setShowLoginDialog(true)
@@ -278,7 +305,7 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
                 <p className="font-bold text-lg">{account.fortnite_balance}</p>
               </div>
             </div>
-            <Tabs defaultValue="skins" className="w-full mb-12">
+            <Tabs defaultValue="skins" className="w-full">
               <TabsList className="grid w-full grid-cols-4 bg-white/10 dark:bg-black/20">
                 <TabsTrigger value="skins">Skins</TabsTrigger>
                 <TabsTrigger value="pickaxes">Picaretas</TabsTrigger>
@@ -339,7 +366,7 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
                 <p className="font-bold text-lg">{account.valorantLastRankTitle}</p>
               </div>
             </div>
-            <Tabs defaultValue="weapons" className="w-full mb-12">
+            <Tabs defaultValue="weapons" className="w-full">
               <TabsList className="grid w-full grid-cols-3 bg-white/10 dark:bg-black/20">
                 <TabsTrigger value="weapons">Armas ({account.valorantInventory?.WeaponSkins?.length || 0})</TabsTrigger>
                 <TabsTrigger value="buddies">Chaveiros ({account.valorantInventory?.Buddy?.length || 0})</TabsTrigger>
@@ -498,7 +525,7 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
               )}
 
               {/* Brawl Stars Info */}
-              {account.supercell_brawler_count||0 > 0 && (
+              {account.supercell_brawler_count || 0  > 0 && (
                 <>
                   <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
                     <Users className="w-6 h-6 mb-2 text-orange-400" />
