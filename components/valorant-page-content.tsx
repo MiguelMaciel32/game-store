@@ -341,7 +341,6 @@ export default function ValorantPageContent() {
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState("price")
-  const [filterRegion, setFilterRegion] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
@@ -366,10 +365,6 @@ export default function ValorantPageContent() {
         minInventoryValue: minInventoryValue.toString(),
         _t: Date.now().toString(), // Cache buster
       })
-
-      if (filterRegion !== "all") {
-        params.set("region", filterRegion)
-      }
 
       const response = await fetch(`/api/valorant-accounts?${params.toString()}`, {
         cache: "no-store", // Não usar cache
@@ -412,7 +407,7 @@ export default function ValorantPageContent() {
 
   useEffect(() => {
     fetchAccounts(currentPage)
-  }, [currentPage, minPrice, maxPrice, minInventoryValue, filterRegion])
+  }, [currentPage, minPrice, maxPrice, minInventoryValue])
 
   useEffect(() => {
     const filtered = accounts.filter((account) => {
@@ -445,8 +440,6 @@ export default function ValorantPageContent() {
     setFilteredAccounts(filtered)
   }, [accounts, searchTerm, sortBy])
 
-  const regions = [...new Set(accounts.map((account) => account.riot_valorant_region))]
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: "smooth" })
@@ -454,7 +447,6 @@ export default function ValorantPageContent() {
 
   const resetFilters = () => {
     setSearchTerm("")
-    setFilterRegion("all")
     setSortBy("price")
     setMinPrice(0)
     setMaxPrice(2000)
@@ -583,28 +575,6 @@ export default function ValorantPageContent() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="rounded-xl border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 bg-white/50 dark:bg-gray-700/50"
               />
-            </div>
-
-            {/* Region Filter */}
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center">
-                <Globe className="h-4 w-4 mr-2" />
-                Região
-              </label>
-              <Select value={filterRegion} onValueChange={setFilterRegion}>
-                <SelectTrigger className="rounded-xl border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 bg-white/50 dark:bg-gray-700/50">
-                  <SelectValue placeholder="Selecione a região" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">🌍 Todas as regiões</SelectItem>
-                  <SelectItem value="BRA">🇧🇷 Brasil</SelectItem>
-                  {regions.map((region) => (
-                    <SelectItem key={region} value={region}>
-                      {region}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
             {/* Sort */}
