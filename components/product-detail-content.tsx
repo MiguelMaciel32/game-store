@@ -161,6 +161,7 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
     }
 
     const priceInReais = convertToReais(account.price, account.price_currency)
+
     if (user.balance < priceInReais) {
       toast.error("Saldo insuficiente para realizar a compra")
       return
@@ -208,7 +209,6 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
       }
     } catch (err: unknown) {
       console.error("Erro ao processar a compra:", err)
-
       if (isAxiosError(err)) {
         const errorData = err.response?.data as ApiErrorResponse
         toast.error(errorData?.error || errorData?.message || "Ocorreu um erro ao processar a compra")
@@ -246,15 +246,15 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
     const gameType = getGameType()
     switch (gameType) {
       case "fortnite":
-        return <Gamepad2 className="h-8 w-8" />
+        return <Gamepad2 className="h-6 w-6 sm:h-8 sm:w-8" />
       case "valorant":
-        return <Target className="h-8 w-8" />
+        return <Target className="h-6 w-6 sm:h-8 sm:w-8" />
       case "steam":
-        return <Gamepad2 className="h-8 w-8" />
+        return <Gamepad2 className="h-6 w-6 sm:h-8 sm:w-8" />
       case "supercell":
-        return <Castle className="h-8 w-8" />
+        return <Castle className="h-6 w-6 sm:h-8 sm:w-8" />
       default:
-        return <Package className="h-8 w-8" />
+        return <Package className="h-6 w-6 sm:h-8 sm:w-8" />
     }
   }
 
@@ -264,7 +264,7 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
       case "fortnite":
         return "from-purple-600 to-blue-600"
       case "valorant":
-        return "from-blue-600 to-indigo-600" // Mudança aqui: de red-orange para blue-indigo
+        return "from-blue-600 to-indigo-600"
       case "steam":
         return "from-blue-600 to-indigo-600"
       case "supercell":
@@ -283,48 +283,56 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
       case "fortnite":
         return (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                <User className="w-6 h-6 mb-2 text-purple-400" />
-                <p className="text-sm text-gray-600 dark:text-gray-400">Nível</p>
-                <p className="font-bold text-lg">{account.fortnite_level}</p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                <User className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-purple-400" />
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Nível</p>
+                <p className="font-bold text-sm sm:text-lg">{account.fortnite_level}</p>
               </div>
-              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                <Shield className="w-6 h-6 mb-2 text-purple-400" />
-                <p className="text-sm text-gray-600 dark:text-gray-400">Vitórias</p>
-                <p className="font-bold text-lg">{account.fortnite_lifetime_wins}</p>
+              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                <Shield className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-purple-400" />
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Vitórias</p>
+                <p className="font-bold text-sm sm:text-lg">{account.fortnite_lifetime_wins}</p>
               </div>
-              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                <Package className="w-6 h-6 mb-2 text-purple-400" />
-                <p className="text-sm text-gray-600 dark:text-gray-400">Skins</p>
-                <p className="font-bold text-lg">{account.fortnite_skin_count}</p>
+              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                <Package className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-purple-400" />
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Skins</p>
+                <p className="font-bold text-sm sm:text-lg">{account.fortnite_skin_count}</p>
               </div>
-              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                <Coins className="w-6 h-6 mb-2 text-purple-400" />
-                <p className="text-sm text-gray-600 dark:text-gray-400">V-Bucks</p>
-                <p className="font-bold text-lg">{account.fortnite_balance}</p>
+              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                <Coins className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-purple-400" />
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">V-Bucks</p>
+                <p className="font-bold text-sm sm:text-lg">{account.fortnite_balance}</p>
               </div>
             </div>
             <Tabs defaultValue="skins" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 bg-white/10 dark:bg-black/20">
-                <TabsTrigger value="skins">Skins</TabsTrigger>
-                <TabsTrigger value="pickaxes">Picaretas</TabsTrigger>
-                <TabsTrigger value="gliders">Planadores</TabsTrigger>
-                <TabsTrigger value="emotes">Emotes</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-white/10 dark:bg-black/20">
+                <TabsTrigger value="skins" className="text-xs sm:text-sm">
+                  Skins
+                </TabsTrigger>
+                <TabsTrigger value="pickaxes" className="text-xs sm:text-sm">
+                  Picaretas
+                </TabsTrigger>
+                <TabsTrigger value="gliders" className="text-xs sm:text-sm">
+                  Planadores
+                </TabsTrigger>
+                <TabsTrigger value="emotes" className="text-xs sm:text-sm">
+                  Emotes
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="skins">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 mt-4">
                   {account.fortniteSkins?.map((skin: any) => (
                     <div
                       key={skin.id}
-                      className="bg-white/10 dark:bg-black/20 p-3 rounded-xl text-center backdrop-blur-sm"
+                      className="bg-white/10 dark:bg-black/20 p-2 sm:p-3 rounded-xl text-center backdrop-blur-sm"
                     >
                       <Image
                         src={`https://fortnite-api.com/images/cosmetics/br/${skin.id}/smallicon.png`}
                         alt={skin.title}
-                        width={80}
-                        height={80}
-                        className="mx-auto mb-2 rounded-lg"
+                        width={60}
+                        height={60}
+                        className="mx-auto mb-2 rounded-lg w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement
                           target.onerror = null
@@ -344,47 +352,53 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
       case "valorant":
         return (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                <Globe className="w-6 h-6 mb-2 text-blue-400" /> {/* red-400 -> blue-400 */}
-                <p className="text-sm text-gray-600 dark:text-gray-400">Região</p>
-                <p className="font-bold text-lg">{account.riot_valorant_region}</p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                <Globe className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-blue-400" />
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Região</p>
+                <p className="font-bold text-sm sm:text-lg">{account.riot_valorant_region}</p>
               </div>
-              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                <Users className="w-6 h-6 mb-2 text-blue-400" /> {/* red-400 -> blue-400 */}
-                <p className="text-sm text-gray-600 dark:text-gray-400">Nível</p>
-                <p className="font-bold text-lg">{account.riot_valorant_level}</p>
+              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-blue-400" />
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Nível</p>
+                <p className="font-bold text-sm sm:text-lg">{account.riot_valorant_level}</p>
               </div>
-              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                <Package className="w-6 h-6 mb-2 text-blue-400" /> {/* red-400 -> blue-400 */}
-                <p className="text-sm text-gray-600 dark:text-gray-400">Skins</p>
-                <p className="font-bold text-lg">{account.riot_valorant_skin_count}</p>
+              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                <Package className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-blue-400" />
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Skins</p>
+                <p className="font-bold text-sm sm:text-lg">{account.riot_valorant_skin_count}</p>
               </div>
-              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                <Shield className="w-6 h-6 mb-2 text-blue-400" /> {/* red-400 -> blue-400 */}
-                <p className="text-sm text-gray-600 dark:text-gray-400">Rank</p>
-                <p className="font-bold text-lg">{account.valorantLastRankTitle}</p>
+              <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                <Shield className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-blue-400" />
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Rank</p>
+                <p className="font-bold text-sm sm:text-lg">{account.valorantLastRankTitle}</p>
               </div>
             </div>
             <Tabs defaultValue="weapons" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-white/10 dark:bg-black/20">
-                <TabsTrigger value="weapons">Armas ({account.valorantInventory?.WeaponSkins?.length || 0})</TabsTrigger>
-                <TabsTrigger value="buddies">Chaveiros ({account.valorantInventory?.Buddy?.length || 0})</TabsTrigger>
-                <TabsTrigger value="agents">Agentes ({account.valorantInventory?.Agent?.length || 0})</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 bg-white/10 dark:bg-black/20">
+                <TabsTrigger value="weapons" className="text-xs sm:text-sm">
+                  Armas ({account.valorantInventory?.WeaponSkins?.length || 0})
+                </TabsTrigger>
+                <TabsTrigger value="buddies" className="text-xs sm:text-sm">
+                  Chaveiros ({account.valorantInventory?.Buddy?.length || 0})
+                </TabsTrigger>
+                <TabsTrigger value="agents" className="text-xs sm:text-sm">
+                  Agentes ({account.valorantInventory?.Agent?.length || 0})
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="weapons">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 mt-4">
                   {account.valorantInventory?.WeaponSkins?.map((skin: string, index: number) => (
                     <div
                       key={skin}
-                      className="bg-white/10 dark:bg-black/20 p-3 rounded-xl text-center backdrop-blur-sm"
+                      className="bg-white/10 dark:bg-black/20 p-2 sm:p-3 rounded-xl text-center backdrop-blur-sm"
                     >
                       <Image
                         src={`https://media.valorant-api.com/weaponskins/${skin}/displayicon.png`}
                         alt={`Skin ${index + 1}`}
-                        width={80}
-                        height={80}
-                        className="mx-auto mb-2 rounded-lg"
+                        width={60}
+                        height={60}
+                        className="mx-auto mb-2 rounded-lg w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement
                           target.onerror = null
@@ -397,24 +411,26 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
                 </div>
                 {(!account.valorantInventory?.WeaponSkins || account.valorantInventory.WeaponSkins.length === 0) && (
                   <div className="text-center py-8">
-                    <Package className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                    <p className="text-gray-600 dark:text-gray-400">Nenhuma skin de arma encontrada</p>
+                    <Package className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-4 text-gray-400" />
+                    <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
+                      Nenhuma skin de arma encontrada
+                    </p>
                   </div>
                 )}
               </TabsContent>
               <TabsContent value="buddies">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 mt-4">
                   {account.valorantInventory?.Buddy?.map((buddy: string, index: number) => (
                     <div
                       key={buddy}
-                      className="bg-white/10 dark:bg-black/20 p-3 rounded-xl text-center backdrop-blur-sm"
+                      className="bg-white/10 dark:bg-black/20 p-2 sm:p-3 rounded-xl text-center backdrop-blur-sm"
                     >
                       <Image
                         src={`https://media.valorant-api.com/buddies/${buddy}/displayicon.png`}
                         alt={`Chaveiro ${index + 1}`}
-                        width={80}
-                        height={80}
-                        className="mx-auto mb-2 rounded-lg"
+                        width={60}
+                        height={60}
+                        className="mx-auto mb-2 rounded-lg w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement
                           target.onerror = null
@@ -427,24 +443,24 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
                 </div>
                 {(!account.valorantInventory?.Buddy || account.valorantInventory.Buddy.length === 0) && (
                   <div className="text-center py-8">
-                    <Package className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                    <p className="text-gray-600 dark:text-gray-400">Nenhum chaveiro encontrado</p>
+                    <Package className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-4 text-gray-400" />
+                    <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Nenhum chaveiro encontrado</p>
                   </div>
                 )}
               </TabsContent>
               <TabsContent value="agents">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 mt-4">
                   {account.valorantInventory?.Agent?.map((agent: string, index: number) => (
                     <div
                       key={agent}
-                      className="bg-white/10 dark:bg-black/20 p-3 rounded-xl text-center backdrop-blur-sm"
+                      className="bg-white/10 dark:bg-black/20 p-2 sm:p-3 rounded-xl text-center backdrop-blur-sm"
                     >
                       <Image
                         src={`https://media.valorant-api.com/agents/${agent}/displayicon.png`}
                         alt={`Agente ${index + 1}`}
-                        width={80}
-                        height={80}
-                        className="mx-auto mb-2 rounded-lg"
+                        width={60}
+                        height={60}
+                        className="mx-auto mb-2 rounded-lg w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement
                           target.onerror = null
@@ -457,8 +473,8 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
                 </div>
                 {(!account.valorantInventory?.Agent || account.valorantInventory.Agent.length === 0) && (
                   <div className="text-center py-8">
-                    <Users className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                    <p className="text-gray-600 dark:text-gray-400">Nenhum agente encontrado</p>
+                    <Users className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-4 text-gray-400" />
+                    <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Nenhum agente encontrado</p>
                   </div>
                 )}
               </TabsContent>
@@ -469,92 +485,97 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
       case "supercell":
         return (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
               {/* Clash of Clans Info */}
-              {account.supercell_town_hall_level || 0 > 0 && (
-                <>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Castle className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Centro da Vila</p>
-                    <p className="font-bold text-lg">{account.supercell_town_hall_level}</p>
-                  </div>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Users className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Base do Construtor</p>
-                    <p className="font-bold text-lg">{account.supercell_builder_hall_level}</p>
-                  </div>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Star className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Troféus</p>
-                    <p className="font-bold text-lg">{account.supercell_builder_hall_cup_count}</p>
-                  </div>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Crown className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Nível Mágico</p>
-                    <p className="font-bold text-lg">{account.supercell_magic_level}</p>
-                  </div>
-                </>
-              )}
+              {account.supercell_town_hall_level ||
+                (0 > 0 && (
+                  <>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Castle className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Centro da Vila</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_town_hall_level}</p>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Users className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Base do Construtor</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_builder_hall_level}</p>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Star className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Troféus</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_builder_hall_cup_count}</p>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Crown className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Nível Mágico</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_magic_level}</p>
+                    </div>
+                  </>
+                ))}
 
               {/* Clash Royale Info */}
-              {account.supercell_scroll_level || 0 > 0 && (
-                <>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Crown className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Nível do Rei</p>
-                    <p className="font-bold text-lg">
-                      {account.supercell_king_level || account.supercell_scroll_level}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Star className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Troféus</p>
-                    <p className="font-bold text-lg">{account.supercell_scroll_trophies}</p>
-                  </div>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Shield className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Vitórias</p>
-                    <p className="font-bold text-lg">{account.supercell_scroll_victories}</p>
-                  </div>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Target className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Arena</p>
-                    <p className="font-bold text-lg">{account.supercell_arena || "N/A"}</p>
-                  </div>
-                </>
-              )}
+              {account.supercell_scroll_level ||
+                (0 > 0 && (
+                  <>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Crown className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Nível do Rei</p>
+                      <p className="font-bold text-sm sm:text-lg">
+                        {account.supercell_king_level || account.supercell_scroll_level}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Star className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Troféus</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_scroll_trophies}</p>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Shield className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Vitórias</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_scroll_victories}</p>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Target className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Arena</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_arena || "N/A"}</p>
+                    </div>
+                  </>
+                ))}
 
               {/* Brawl Stars Info */}
-              {account.supercell_brawler_count || 0  > 0 && (
-                <>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Users className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Brawlers</p>
-                    <p className="font-bold text-lg">{account.supercell_brawler_count}</p>
-                  </div>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Crown className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Lendários</p>
-                    <p className="font-bold text-lg">{account.supercell_legendary_brawler_count}</p>
-                  </div>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Star className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Troféus</p>
-                    <p className="font-bold text-lg">{account.supercell_laser_trophies}</p>
-                  </div>
-                  <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                    <Shield className="w-6 h-6 mb-2 text-orange-400" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Vitórias</p>
-                    <p className="font-bold text-lg">{account.supercell_laser_victories}</p>
-                  </div>
-                </>
-              )}
+              {account.supercell_brawler_count ||
+                (0 > 0 && (
+                  <>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Users className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Brawlers</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_brawler_count}</p>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Crown className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Lendários</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_legendary_brawler_count}</p>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Star className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Troféus</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_laser_trophies}</p>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                      <Shield className="w-5 h-5 sm:w-6 sm:h-6 mb-2 text-orange-400" />
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Vitórias</p>
+                      <p className="font-bold text-sm sm:text-lg">{account.supercell_laser_victories}</p>
+                    </div>
+                  </>
+                ))}
             </div>
 
             {/* Account Links */}
             {account.accountLinks && account.accountLinks.length > 0 && (
-              <div className="mt-6 bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Links da Conta</h3>
+              <div className="mt-6 bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                <h3 className="text-base sm:text-lg font-semibold mb-4 text-gray-800 dark:text-white">
+                  Links da Conta
+                </h3>
                 <div className="space-y-2">
                   {account.accountLinks.map((link, index) => (
                     <div
@@ -562,16 +583,18 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
                       className="flex items-center justify-between bg-white/10 dark:bg-black/20 p-3 rounded-lg"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                          <Gamepad2 className="w-4 h-4 text-white" />
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                          <Gamepad2 className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                         </div>
-                        <span className="text-gray-700 dark:text-gray-300 font-medium">{link.text}</span>
+                        <span className="text-gray-700 dark:text-gray-300 font-medium text-sm sm:text-base">
+                          {link.text}
+                        </span>
                       </div>
                       <a
                         href={link.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-orange-500 hover:text-orange-600 font-medium text-sm"
+                        className="text-orange-500 hover:text-orange-600 font-medium text-xs sm:text-sm"
                       >
                         Ver Perfil →
                       </a>
@@ -583,24 +606,31 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
 
             {/* Description HTML */}
             {account.descriptionHtml && (
-              <div className="mt-6 bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm">
-                <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Detalhes da Conta</h3>
-                <div dangerouslySetInnerHTML={{ __html: account.descriptionHtml }} className="max-w-full h-auto" />
+              <div className="mt-6 bg-white/10 dark:bg-black/20 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
+                <h3 className="text-base sm:text-lg font-semibold mb-4 text-gray-800 dark:text-white">
+                  Detalhes da Conta
+                </h3>
+                <div
+                  dangerouslySetInnerHTML={{ __html: account.descriptionHtml }}
+                  className="max-w-full h-auto text-sm sm:text-base"
+                />
               </div>
             )}
 
             {/* Brawlers List (if available) */}
             {account.supercellBrawlers && account.supercellBrawlers.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Brawlers Disponíveis</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <h3 className="text-base sm:text-lg font-semibold mb-4 text-gray-800 dark:text-white">
+                  Brawlers Disponíveis
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
                   {account.supercellBrawlers.map((brawler, index) => (
                     <div
                       key={index}
-                      className="bg-white/10 dark:bg-black/20 p-3 rounded-xl text-center backdrop-blur-sm"
+                      className="bg-white/10 dark:bg-black/20 p-2 sm:p-3 rounded-xl text-center backdrop-blur-sm"
                     >
-                      <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <Users className="w-6 h-6 text-white" />
+                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <Users className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                       </div>
                       <p className="text-xs truncate font-medium">{brawler}</p>
                     </div>
@@ -614,8 +644,10 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
       default:
         return (
           <div className="text-center py-8">
-            <Package className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-600 dark:text-gray-400">Informações específicas do jogo não disponíveis</p>
+            <Package className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
+              Informações específicas do jogo não disponíveis
+            </p>
           </div>
         )
     }
@@ -623,22 +655,22 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
         <div className="flex items-center space-x-4 mb-6">
           <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
-          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-6 w-32 sm:h-8 sm:w-48" />
         </div>
         <Card className="game-card">
           <CardHeader>
-            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-6 w-3/4 sm:h-8" />
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-5/6" />
-              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-32 w-full sm:h-40" />
             </div>
           </CardContent>
         </Card>
@@ -648,13 +680,16 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
 
   if (error) {
     return (
-      <div className="p-6">
+      <div className="p-3 sm:p-6">
         <Card className="bg-red-100/60 dark:bg-red-900/20 backdrop-blur-sm border-red-200 dark:border-red-800 rounded-xl">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center justify-center text-red-600 dark:text-red-400 text-center">
-              <AlertCircle className="w-12 h-12 mb-4" />
-              <p className="text-lg mb-4">{error}</p>
-              <Button onClick={() => window.location.reload()} className="bg-red-500 hover:bg-red-600 text-white">
+              <AlertCircle className="w-8 w-8 sm:w-12 sm:h-12 mb-4" />
+              <p className="text-base sm:text-lg mb-4">{error}</p>
+              <Button
+                onClick={() => window.location.reload()}
+                className="bg-red-500 hover:bg-red-600 text-white text-sm sm:text-base"
+              >
                 Tentar Novamente
               </Button>
             </div>
@@ -666,12 +701,12 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
 
   if (!account) {
     return (
-      <div className="p-6">
+      <div className="p-3 sm:p-6">
         <Card className="game-card">
           <CardContent className="pt-6">
             <div className="text-center">
-              <AlertCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-              <p className="text-lg text-gray-600 dark:text-gray-300">Produto não encontrado</p>
+              <AlertCircle className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-4 text-gray-400" />
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">Produto não encontrado</p>
             </div>
           </CardContent>
         </Card>
@@ -682,28 +717,30 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
   const priceInReais = convertToReais(account.price, account.price_currency)
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header with Back Button */}
       <div className="flex items-center space-x-4 mb-6">
         <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Detalhes do Produto</h1>
+        <h1 className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-white">Detalhes do Produto</h1>
       </div>
 
       {/* Product Header */}
       <div className={`relative overflow-hidden bg-gradient-to-r ${getGameColor()} text-white rounded-2xl`}>
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative p-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="bg-white/20 rounded-full p-3">{getGameIcon()}</div>
+        <div className="relative p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-4 lg:space-y-0">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="bg-white/20 rounded-full p-2 sm:p-3">{getGameIcon()}</div>
               <div>
-                <h2 className="text-3xl font-bold mb-2">{account.title}</h2>
-                <Badge className="bg-white/20 text-white text-lg px-4 py-2">R$ {priceInReais.toFixed(2)}</Badge>
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 line-clamp-2">{account.title}</h2>
+                <Badge className="bg-white/20 text-white text-sm sm:text-base lg:text-lg px-3 sm:px-4 py-1 sm:py-2">
+                  R$ {priceInReais.toFixed(2)}
+                </Badge>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3 w-full lg:w-auto">
               <WishlistButton
                 gameId={account.item_id.toString()}
                 gameTitle={account.title}
@@ -715,18 +752,18 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
               />
               <Button
                 size="lg"
-                className="bg-white text-gray-900 hover:bg-gray-100 font-bold px-8"
+                className="bg-white text-gray-900 hover:bg-gray-100 font-bold px-4 sm:px-6 lg:px-8 flex-1 lg:flex-none text-sm sm:text-base"
                 onClick={handlePurchase}
                 disabled={!user || (user && user.balance < priceInReais)}
               >
-                <ShoppingCart className="w-5 h-5 mr-2" />
+                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Comprar Agora
               </Button>
             </div>
           </div>
           {user && (
             <div className="mt-4 text-white/80">
-              <p className="text-sm">Saldo disponível: R$ {user.balance.toFixed(2)}</p>
+              <p className="text-xs sm:text-sm">Saldo disponível: R$ {user.balance.toFixed(2)}</p>
             </div>
           )}
         </div>
@@ -734,7 +771,7 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
 
       {/* Product Details */}
       <Card className="game-card">
-        <CardContent className="p-6">{renderGameSpecificInfo()}</CardContent>
+        <CardContent className="p-3 sm:p-6">{renderGameSpecificInfo()}</CardContent>
       </Card>
 
       {/* Loading Dialog */}
@@ -755,7 +792,7 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
 
       {/* Purchase Success Dialog */}
       <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
-        <DialogContent className="sm:max-w-[500px] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-700/50">
+        <DialogContent className="sm:max-w-[500px] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-green-600 dark:text-green-400">Compra Realizada com Sucesso!</DialogTitle>
             <DialogDescription className="text-gray-600 dark:text-gray-300">
@@ -766,27 +803,33 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
             <div className="mt-4 space-y-4">
               {/* Account Login Data */}
               {loginData.loginData && (
-                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <h3 className="font-bold mb-3 text-gray-800 dark:text-white">Dados de Login da Conta:</h3>
+                <div className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <h3 className="font-bold mb-3 text-gray-800 dark:text-white text-sm sm:text-base">
+                    Dados de Login da Conta:
+                  </h3>
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Login: {loginData.loginData.login}</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+                      <span className="text-gray-600 dark:text-gray-300 text-sm break-all">
+                        Login: {loginData.loginData.login}
+                      </span>
                       <Button
                         onClick={() => copyToClipboard(loginData.loginData.login)}
                         size="sm"
                         variant="outline"
-                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500"
+                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500 w-full sm:w-auto"
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Senha: {loginData.loginData.password}</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+                      <span className="text-gray-600 dark:text-gray-300 text-sm break-all">
+                        Senha: {loginData.loginData.password}
+                      </span>
                       <Button
                         onClick={() => copyToClipboard(loginData.loginData.password)}
                         size="sm"
                         variant="outline"
-                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500"
+                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500 w-full sm:w-auto"
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
@@ -797,29 +840,33 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
 
               {/* Email Login Data */}
               {loginData.emailLoginData && (
-                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <h3 className="font-bold mb-3 text-gray-800 dark:text-white">Dados de Login do Email:</h3>
+                <div className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <h3 className="font-bold mb-3 text-gray-800 dark:text-white text-sm sm:text-base">
+                    Dados de Login do Email:
+                  </h3>
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Email: {loginData.emailLoginData.login}</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+                      <span className="text-gray-600 dark:text-gray-300 text-sm break-all">
+                        Email: {loginData.emailLoginData.login}
+                      </span>
                       <Button
                         onClick={() => copyToClipboard(loginData.emailLoginData.login)}
                         size="sm"
                         variant="outline"
-                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500"
+                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500 w-full sm:w-auto"
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+                      <span className="text-gray-600 dark:text-gray-300 text-sm break-all">
                         Senha do Email: {loginData.emailLoginData.password}
                       </span>
                       <Button
                         onClick={() => copyToClipboard(loginData.emailLoginData.password)}
                         size="sm"
                         variant="outline"
-                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500"
+                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500 w-full sm:w-auto"
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
@@ -829,9 +876,11 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
               )}
 
               {/* Purchase Details */}
-              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl border border-green-200 dark:border-green-700">
-                <h3 className="font-bold mb-3 text-green-800 dark:text-green-400">Detalhes da Compra:</h3>
-                <div className="space-y-1 text-sm">
+              <div className="bg-green-50 dark:bg-green-900/20 p-3 sm:p-4 rounded-xl border border-green-200 dark:border-green-700">
+                <h3 className="font-bold mb-3 text-green-800 dark:text-green-400 text-sm sm:text-base">
+                  Detalhes da Compra:
+                </h3>
+                <div className="space-y-1 text-xs sm:text-sm">
                   <p className="text-gray-600 dark:text-gray-300">ID do Item: {loginData.item_id}</p>
                   <p className="text-gray-600 dark:text-gray-300">Título: {loginData.title}</p>
                   <p className="text-gray-600 dark:text-gray-300">Preço: R$ {priceInReais.toFixed(2)}</p>
@@ -841,13 +890,13 @@ export default function ProductDetailContent({ productId }: ProductDetailContent
 
               {/* Email Link */}
               {loginData.emailLoginUrl && (
-                <p className="text-sm text-blue-600 dark:text-blue-400">
+                <p className="text-xs sm:text-sm text-blue-600 dark:text-blue-400">
                   Link para acessar o email:{" "}
                   <a
                     href={loginData.emailLoginUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline font-medium"
+                    className="text-blue-500 hover:underline font-medium break-all"
                   >
                     {loginData.emailLoginUrl}
                   </a>

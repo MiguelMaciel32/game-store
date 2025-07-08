@@ -573,20 +573,7 @@ export default function RechargeModal({ isOpen, onClose, onRechargeSuccess }: Re
                 </div>
               </div>
 
-              {/* Bonus Option */}
-              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-2xl p-4">
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="no-bonus"
-                    checked={noBonus}
-                    onCheckedChange={(checked) => setNoBonus(!!checked)}
-                    className="border-2 border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500 h-5 w-5"
-                  />
-                  <label htmlFor="no-bonus" className="text-gray-700 dark:text-gray-300 cursor-pointer flex-1">
-                    Não quero receber bônus (processamento mais rápido)
-                  </label>
-                </div>
-              </div>
+            
 
               {/* Generate PIX Button */}
               <Button

@@ -7,7 +7,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import { Send, Crown, Star, MessageCircle, Smile, Hash, Mic, Video, Settings, UserPlus } from "lucide-react"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Send, Crown, Star, MessageCircle, Smile, Hash, Mic, Video, Settings, UserPlus, Users } from "lucide-react"
 import { supabase, type ChatMessage, type User } from "@/lib/supabase"
 import { useAuth } from "@/hooks/use-auth"
 
@@ -18,6 +19,7 @@ export default function CommunityChat() {
   const [isLoading, setIsLoading] = useState(true)
   const [onlineUsers, setOnlineUsers] = useState<User[]>([])
   const [isSending, setIsSending] = useState(false)
+  const [showMobileUsers, setShowMobileUsers] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
@@ -25,7 +27,6 @@ export default function CommunityChat() {
   useEffect(() => {
     loadMessages()
     loadOnlineUsers()
-
     // Subscription para novas mensagens
     const channel = supabase
       .channel("chat_messages")
@@ -197,12 +198,14 @@ export default function CommunityChat() {
 
   if (!currentUser) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center px-4">
         <Card className="w-full max-w-md mx-auto game-card">
-          <CardContent className="text-center p-8">
-            <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <CardTitle className="text-xl font-bold text-gray-800 mb-2">Chat da Comunidade</CardTitle>
-            <p className="text-gray-600 mb-6">Conecte-se com outros jogadores e compartilhe suas experiências!</p>
+          <CardContent className="text-center p-6 sm:p-8">
+            <MessageCircle className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400 mx-auto mb-4" />
+            <CardTitle className="text-lg sm:text-xl font-bold text-gray-800 mb-2">Chat da Comunidade</CardTitle>
+            <p className="text-sm sm:text-base text-gray-600 mb-6">
+              Conecte-se com outros jogadores e compartilhe suas experiências!
+            </p>
             <div className="space-y-3">
               <Button className="w-full btn-blue">Fazer Login</Button>
               <Button variant="outline" className="w-full btn-outline-blue bg-transparent">
@@ -216,26 +219,81 @@ export default function CommunityChat() {
   }
 
   return (
-    <div className="h-full flex gap-4">
+    <div className="h-full flex flex-col lg:flex-row gap-2 lg:gap-4 p-2 lg:p-0">
       {/* Chat Principal */}
       <div className="flex-1 flex flex-col game-card rounded-xl overflow-hidden">
         {/* Header do Chat */}
-        <div className="bg-white/30 border-b border-white/20 p-4">
+        <div className="bg-white/30 border-b border-white/20 p-3 lg:p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 lg:space-x-3">
               <div className="flex items-center space-x-2">
-                <Hash className="h-5 w-5 text-blue-500" />
-                <h3 className="font-bold text-gray-800">chat-geral</h3>
+                <Hash className="h-4 w-4 lg:h-5 lg:w-5 text-blue-500" />
+                <h3 className="font-bold text-gray-800 text-sm lg:text-base">chat-geral</h3>
               </div>
               <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
                 {onlineUsers.length} online
               </Badge>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+            <div className="flex items-center space-x-1 lg:space-x-2">
+              {/* Botão para usuários online - Mobile */}
+              <Sheet open={showMobileUsers} onOpenChange={setShowMobileUsers}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 lg:hidden">
+                    <Users className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[300px] sm:w-[350px]">
+                  <SheetHeader>
+                    <SheetTitle className="flex items-center justify-between">
+                      <span>Membros Online</span>
+                      <Button variant="ghost" size="icon" className="h-6 w-6">
+                        <UserPlus className="h-4 w-4" />
+                      </Button>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <ScrollArea className="h-[calc(100vh-100px)] mt-4">
+                    <div className="space-y-3">
+                      {onlineUsers.map((user) => (
+                        <div
+                          key={user.id}
+                          className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/20 transition-colors cursor-pointer"
+                        >
+                          <div className="relative">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage
+                                src={user.avatar_url || "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9"}
+                              />
+                              <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                                {getInitials(user.name)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-400 rounded-full border-2 border-white"></div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-800 truncate">{user.name}</div>
+                            <div className="flex items-center space-x-1">
+                              <Badge
+                                variant="secondary"
+                                className={`text-xs px-1.5 py-0.5 ${getLevelColor(user.level)}`}
+                              >
+                                <div className="flex items-center space-x-1">
+                                  {getLevelIcon(user.level)}
+                                  <span>{user.level}</span>
+                                </div>
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </SheetContent>
+              </Sheet>
+
+              <Button variant="ghost" size="icon" className="h-8 w-8 hidden sm:flex">
                 <Mic className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button variant="ghost" size="icon" className="h-8 w-8 hidden sm:flex">
                 <Video className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -246,7 +304,7 @@ export default function CommunityChat() {
         </div>
 
         {/* Mensagens */}
-        <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
+        <ScrollArea className="flex-1 p-3 lg:p-4" ref={scrollAreaRef}>
           {isLoading ? (
             <div className="flex items-center justify-center h-32">
               <div className="text-gray-500">Carregando mensagens...</div>
@@ -254,13 +312,13 @@ export default function CommunityChat() {
           ) : messages.length === 0 ? (
             <div className="flex items-center justify-center h-32">
               <div className="text-center">
-                <Smile className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                <div className="text-gray-500 text-lg font-medium mb-2">Bem-vindo ao chat!</div>
+                <Smile className="h-8 w-8 lg:h-12 lg:w-12 text-gray-400 mx-auto mb-3" />
+                <div className="text-gray-500 text-base lg:text-lg font-medium mb-2">Bem-vindo ao chat!</div>
                 <div className="text-gray-400 text-sm">Seja o primeiro a enviar uma mensagem!</div>
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 lg:space-y-4">
               {messages.map((message, index) => {
                 const isConsecutive =
                   index > 0 &&
@@ -269,19 +327,26 @@ export default function CommunityChat() {
                     5 * 60 * 1000
 
                 return (
-                  <div key={message.id} className={`flex space-x-3 ${isConsecutive ? "mt-1" : "mt-4"}`}>
+                  <div
+                    key={message.id}
+                    className={`flex space-x-2 lg:space-x-3 ${isConsecutive ? "mt-1" : "mt-3 lg:mt-4"}`}
+                  >
                     {!isConsecutive && (
-                      <Avatar className="h-10 w-10 flex-shrink-0">
-                        <AvatarImage src={message.user?.avatar_url || "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9"} />
-                        <AvatarFallback className="text-sm bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                      <Avatar className="h-8 w-8 lg:h-10 lg:w-10 flex-shrink-0">
+                        <AvatarImage
+                          src={
+                            message.user?.avatar_url || "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9"
+                          }
+                        />
+                        <AvatarFallback className="text-xs lg:text-sm bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                           {getInitials(message.user?.name || "?")}
                         </AvatarFallback>
                       </Avatar>
                     )}
-                    {isConsecutive && <div className="w-10 flex-shrink-0" />}
+                    {isConsecutive && <div className="w-8 lg:w-10 flex-shrink-0" />}
                     <div className="flex-1 min-w-0">
                       {!isConsecutive && (
-                        <div className="flex items-center space-x-2 mb-1">
+                        <div className="flex items-center space-x-2 mb-1 flex-wrap">
                           <span className="font-semibold text-gray-800 text-sm">{message.user?.name || "Usuário"}</span>
                           {message.user?.level && (
                             <Badge
@@ -297,7 +362,7 @@ export default function CommunityChat() {
                           <span className="text-xs text-gray-500">{formatTime(message.created_at)}</span>
                         </div>
                       )}
-                      <div className="bg-white/60 rounded-lg p-3 text-sm text-gray-800 shadow-sm">
+                      <div className="bg-white/60 rounded-lg p-2 lg:p-3 text-sm text-gray-800 shadow-sm break-words">
                         {message.message}
                       </div>
                     </div>
@@ -310,13 +375,13 @@ export default function CommunityChat() {
         </ScrollArea>
 
         {/* Input de Mensagem */}
-        <div className="p-4 border-t border-white/20 bg-white/20">
-          <div className="flex space-x-3">
+        <div className="p-3 lg:p-4 border-t border-white/20 bg-white/20">
+          <div className="flex space-x-2 lg:space-x-3">
             <Input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder={`Mensagem #chat-geral`}
-              className="flex-1 bg-white/60 border-white/30 text-gray-800 placeholder:text-gray-500 rounded-lg"
+              className="flex-1 bg-white/60 border-white/30 text-gray-800 placeholder:text-gray-500 rounded-lg text-sm lg:text-base"
               onKeyPress={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault()
@@ -329,20 +394,20 @@ export default function CommunityChat() {
             <Button
               onClick={sendMessage}
               disabled={!newMessage.trim() || isSending}
-              className="btn-blue px-4 rounded-lg"
+              className="btn-blue px-3 lg:px-4 rounded-lg shrink-0"
             >
               <Send className="h-4 w-4" />
             </Button>
           </div>
-          <div className="text-xs text-gray-500 mt-2 flex justify-between">
+          <div className="text-xs text-gray-500 mt-2 flex justify-between items-center">
             <span>{newMessage.length}/500</span>
-            <span>Enter para enviar • Shift+Enter para nova linha</span>
+            <span className="hidden sm:block text-right">Enter para enviar • Shift+Enter para nova linha</span>
           </div>
         </div>
       </div>
 
-      {/* Sidebar de Usuários Online */}
-      <div className="w-64 game-card rounded-xl overflow-hidden">
+      {/* Sidebar de Usuários Online - Desktop */}
+      <div className="hidden lg:block w-64 game-card rounded-xl overflow-hidden">
         <div className="bg-white/30 border-b border-white/20 p-4">
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-gray-800">Membros Online</h4>
@@ -351,7 +416,6 @@ export default function CommunityChat() {
             </Button>
           </div>
         </div>
-
         <ScrollArea className="h-full p-4">
           <div className="space-y-3">
             {onlineUsers.map((user) => (
@@ -361,7 +425,9 @@ export default function CommunityChat() {
               >
                 <div className="relative">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.avatar_url || "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9"} />
+                    <AvatarImage
+                      src={user.avatar_url || "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9"}
+                    />
                     <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                       {getInitials(user.name)}
                     </AvatarFallback>
