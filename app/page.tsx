@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import {
   Search,
@@ -39,7 +38,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Image from "next/image"
 import ValorantCarousel from "@/components/valorant-carousel"
-
 import CommunityChat from "@/components/community-chat"
 import ProfilePage from "@/components/profile-page"
 import WishlistPage from "@/components/wishlist-page"
@@ -49,6 +47,9 @@ import WishlistButton from "@/components/wishlist-button"
 import { AuthProvider, useAuth } from "@/hooks/use-auth"
 import { ThemeProvider, useTheme } from "@/hooks/use-theme"
 import Link from "next/link"
+import FortniteCarousel from "@/components/fortnite-carousel"
+import RobloxCarousel from "@/components/roblox-carousel"
+import SteamCarousel from "@/components/steam-carousel"
 
 const sidebarItems = [
   { icon: Home, label: "Início", action: "home" },
@@ -60,7 +61,7 @@ const sidebarItems = [
 ]
 
 const featuredGame = {
-  id: "witcher3",
+  id: "valorant",
   title: "Compre sua Conta do Valorant",
   description:
     "Compre sua conta do valorant com skins, agentes e muito mais! Temos uma grande variedade de contas com diferentes níveis e inventários.",
@@ -150,7 +151,6 @@ function GameStoreContent() {
               <span className="sm:hidden">GV</span>
             </div>
           </div>
-
           <div className="flex-1 max-w-[120px] sm:max-w-xs lg:max-w-md mx-1 sm:mx-2 lg:mx-4 xl:mx-8">
             <div className="relative">
               <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3 w-3 sm:h-4 sm:w-4" />
@@ -160,7 +160,6 @@ function GameStoreContent() {
               />
             </div>
           </div>
-
           <div className="flex items-center space-x-1 lg:space-x-2">
             <Button
               variant="ghost"
@@ -169,7 +168,6 @@ function GameStoreContent() {
             >
               <Bell className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
             </Button>
-
             {/* User Dropdown */}
             {user ? (
               <DropdownMenu>
@@ -181,7 +179,17 @@ function GameStoreContent() {
                     <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
                       <Avatar className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8">
                         <AvatarImage
-                          src={user.avatar_url || "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9"}
+                          src={
+                            user.avatar_url ||
+                            "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg"
+                          }
                           alt={user.name}
                         />
                         <AvatarFallback
@@ -210,7 +218,17 @@ function GameStoreContent() {
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12">
                         <AvatarImage
-                          src={user.avatar_url || "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9"}
+                          src={
+                            user.avatar_url ||
+                            "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg"
+                          }
                           alt={user.name}
                         />
                         <AvatarFallback
@@ -225,7 +243,9 @@ function GameStoreContent() {
                         </div>
                         <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">{user.email}</div>
                         <Badge
-                          className={`text-xs mt-1 bg-gradient-to-r ${getLevelColor(user.level)} text-white border-none`}
+                          className={`text-xs mt-1 bg-gradient-to-r ${getLevelColor(
+                            user.level,
+                          )} text-white border-none`}
                         >
                           Nível {user.level}
                         </Badge>
@@ -248,12 +268,10 @@ function GameStoreContent() {
                     </div>
                   </div>
                   <DropdownMenuItem onClick={() => setActiveSection("profile")}>
-                    <UserCircle className="mr-2 h-4 w-4" />
-                    Meu Perfil
+                    <UserCircle className="mr-2 h-4 w-4" /> Meu Perfil
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setPaymentModalOpen(true)}>
-                    <Wallet className="mr-2 h-4 w-4" />
-                    Recarregar Saldo
+                    <Wallet className="mr-2 h-4 w-4" /> Recarregar Saldo
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuSub>
@@ -265,26 +283,22 @@ function GameStoreContent() {
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent>
                       <DropdownMenuItem onClick={() => setTheme("light")}>
-                        <Sun className="mr-2 h-4 w-4" />
-                        Claro
+                        <Sun className="mr-2 h-4 w-4" /> Claro
                         {theme === "light" && <div className="ml-auto h-2 w-2 bg-blue-500 rounded-full" />}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setTheme("dark")}>
-                        <Moon className="mr-2 h-4 w-4" />
-                        Escuro
+                        <Moon className="mr-2 h-4 w-4" /> Escuro
                         {theme === "dark" && <div className="ml-auto h-2 w-2 bg-blue-500 rounded-full" />}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setTheme("system")}>
-                        <Monitor className="mr-2 h-4 w-4" />
-                        Sistema
+                        <Monitor className="mr-2 h-4 w-4" /> Sistema
                         {theme === "system" && <div className="ml-auto h-2 w-2 bg-blue-500 rounded-full" />}
                       </DropdownMenuItem>
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut} className="text-red-600 dark:text-red-400">
-                    <LogIn className="mr-2 h-4 w-4 rotate-180" />
-                    Sair da Conta
+                    <LogIn className="mr-2 h-4 w-4 rotate-180" /> Sair da Conta
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -300,7 +314,7 @@ function GameStoreContent() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="btn-outline-blue bg-transparent text-xs h-6 sm:h-7 lg:h-8 px-2 sm:px-3 hidden sm:flex"
+                  className="flex-1 text-xs h-6 sm:h-7 lg:h-8 px-2 sm:px-3 bg-transparent"
                   onClick={() => handleSidebarAction("register")}
                 >
                   Cadastrar
@@ -309,13 +323,11 @@ function GameStoreContent() {
             )}
           </div>
         </header>
-
         <div className="flex h-full relative">
           {/* Mobile Sidebar Overlay */}
           {sidebarOpen && (
             <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
           )}
-
           {/* Sidebar */}
           <aside
             className={`${
@@ -330,7 +342,6 @@ function GameStoreContent() {
                   <X className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </div>
-
               {/* User Info */}
               {user ? (
                 <div className="bg-white/20 dark:bg-black/20 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
@@ -338,7 +349,17 @@ function GameStoreContent() {
                     <div className="relative">
                       <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
                         <AvatarImage
-                          src={user.avatar_url || "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9"}
+                          src={
+                            user.avatar_url ||
+                            "https://api.dicebear.com/9.x/fun-emoji/avif?seed=u1wjq3jgdqs9" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg"
+                          }
                           alt={user.name}
                         />
                         <AvatarFallback
@@ -392,7 +413,6 @@ function GameStoreContent() {
                 </div>
               )}
             </div>
-
             {/* Sidebar Content */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* Navigation */}
@@ -419,7 +439,6 @@ function GameStoreContent() {
                   )
                 })}
               </nav>
-
               {/* Quick Actions */}
               {user && (
                 <div className="space-y-2">
@@ -433,7 +452,6 @@ function GameStoreContent() {
                   </button>
                 </div>
               )}
-
               {/* User Settings */}
               {user && (
                 <div className="space-y-2">
@@ -461,7 +479,6 @@ function GameStoreContent() {
                       </div>
                     </div>
                   </div>
-
                   {/* User Info */}
                   <div className="bg-white/20 dark:bg-black/20 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
                     <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-3">Minha Conta</h4>
@@ -489,7 +506,6 @@ function GameStoreContent() {
                 </div>
               )}
             </div>
-
             {/* Sidebar Footer */}
             <div className="p-4 sm:p-6 border-t border-white/20">
               <div className="space-y-2">
@@ -500,7 +516,6 @@ function GameStoreContent() {
               </div>
             </div>
           </aside>
-
           {/* Main Content */}
           <main className="flex-1 p-3 sm:p-4 lg:p-6 overflow-y-auto h-full">
             {activeSection === "community" ? (
@@ -535,8 +550,7 @@ function GameStoreContent() {
                     <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                       <Link href={`/valorant`}>
                         <Button className="btn-blue rounded-full px-4 sm:px-6 w-full sm:w-auto">
-                          <Play className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                          Comprar
+                          <Play className="h-4 w-4 sm:h-5 sm:w-5 mr-2" /> Comprar
                         </Button>
                       </Link>
                       <WishlistButton
@@ -548,15 +562,187 @@ function GameStoreContent() {
                     </div>
                   </div>
                 </div>
-
+                <div className="mb-6 sm:mb-8">
+                  <div className="flex items-center justify-between mb-4 sm:mb-6">
+                    <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200">
+                      Plataformas de Jogos
+                    </h2>
+                    {/* <Button
+                      variant="ghost"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                    >
+                      Ver Todos
+                    </Button> */}
+                  </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3 sm:gap-4">
+                    {/* Steam */}
+                    <Link href="/steam" className="group flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20">
+                        <Image src="/images/platforms/steam.png" alt="Steam Logo" fill className="object-contain" />
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        Steam
+                      </p>
+                    </Link>
+                    {/* Fortnite */}
+                    <Link href="/fortnite" className="group relative flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20">
+                        <Image
+                          src="/images/platforms/fortnite.png"
+                          alt="Fortnite Logo"
+                          fill
+                          className="object-contain"
+                        />
+                      
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                        Fortnite
+                      </p>
+                    </Link>
+                  
+                    {/* Riot Games */}
+                    <Link href="/riot" className="group flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-red-500/20">
+                        <Image src="/images/platforms/riot.png" alt="Riot Games Logo" fill className="object-contain" />
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                        Riot
+                      </p>
+                    </Link>
+                  
+                    {/* Supercell */}
+                    <Link href="/supercell" className="group flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20">
+                        <Image
+                          src="/images/platforms/supercell.png"
+                          alt="Supercell Logo"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        Supercell
+                      </p>
+                    </Link>
+                    {/* EA Games */}
+                    <Link href="/ea" className="group flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-red-500/20">
+                        <Image src="/images/platforms/ea.png" alt="EA Logo" fill className="object-contain" />
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                        EA
+                      </p>
+                    </Link>
+                  
+                    {/* Ubisoft Shield */}
+                    <Link href="/ubisoft" className="group flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-red-500/20">
+                        <Image
+                          src="/images/platforms/ubisoft-shield.png"
+                          alt="Ubisoft Shield Logo"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                        Ubisoft
+                      </p>
+                    </Link>
+                    {/* Epic Games */}
+                    <Link href="/epic" className="group relative flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20">
+                        <Image
+                          src="/images/platforms/epic-games.png"
+                          alt="Epic Games Logo"
+                          fill
+                          className="object-contain"
+                        />
+                       
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                        Epic
+                      </p>
+                    </Link>
+                   
+                    {/* Minecraft */}
+                    <Link href="/minecraft" className="group flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-500/20">
+                        <Image
+                          src="/images/platforms/minecraft.png"
+                          alt="Minecraft Grass Block"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                        Minecraft
+                      </p>
+                    </Link>
+             
+                    {/* Rockstar */}
+                    <Link href="/rockstar" className="group flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-yellow-500/20">
+                        <Image
+                          src="/images/platforms/rockstar.png"
+                          alt="Rockstar Games Logo"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">
+                        Rockstar
+                      </p>
+                    </Link>
+                   
+                  
+                    {/* Discord */}
+                    <Link href="/discord" className="group flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/20">
+                        <Image src="/images/platforms/discord.png" alt="Discord Logo" fill className="object-contain" />
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                        Discord
+                      </p>
+                    </Link>
+                  
+                    {/* Blizzard */}
+                    <Link href="/blizzard" className="group flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20">
+                        <Image
+                          src="/images/platforms/blizzard.png"
+                          alt="Blizzard Logo"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        Blizzard
+                      </p>
+                    </Link>
+                   
+                    {/* Roblox */}
+                    <Link href="/roblox" className="group relative flex flex-col items-center">
+                      <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-red-500/20">
+                        <Image src="/images/platforms/roblox.png" alt="Roblox Logo" fill className="object-contain" />
+                        
+                      </div>
+                      <p className="text-xs sm:text-sm text-center mt-1 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                        Roblox
+                      </p>
+                    </Link>
+                  
+                  </div>
+                </div>
                 {/* Carousels */}
                 <ValorantCarousel />
+                <FortniteCarousel />
+                 <RobloxCarousel />
+                 <SteamCarousel />
               </>
             )}
           </main>
         </div>
       </div>
-
       {/* Modals */}
       <AuthModal isOpen={authModalOpen} onClose={handleAuthClose} defaultTab={authModalTab} />
       <RechargeModal
